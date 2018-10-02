@@ -15,6 +15,10 @@
 // Your code starts here.
 
 
+add_action( 'init', array( 'GAB\Admin', 'handle_google_auth_callback' ) );
+add_action( 'init', array( 'GAB\Admin', 'handle_google_disconnect_callback' ) );
+add_action( 'admin_menu', array( 'GAB\Admin', 'action_admin_menu' ) );
+
 /**
  * Register the class autoloader
  */
