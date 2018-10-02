@@ -36,13 +36,6 @@ class Admin extends Base {
 	protected static $google_scope_requested = 'https://www.googleapis.com/auth/analytics.readonly';
 
 	/**
-	 * URL used for the token request.
-	 *
-	 * @var string
-	 */
-	protected static $google_token_url = 'https://accounts.google.com/o/oauth2/token';
-
-	/**
 	 * Settings page slug.
 	 *
 	 * @var string
