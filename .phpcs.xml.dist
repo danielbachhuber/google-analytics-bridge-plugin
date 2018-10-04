@@ -27,12 +27,17 @@
 	<config name="minimum_supported_wp_version" value="4.6"/>
 	<rule ref="WordPress">
 		<exclude name="WordPress.VIP"/>
+		<exclude name="WordPress.Security.ValidatedSanitizedInput.MissingUnslash"/>
 	</rule>
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<!-- Value: replace the function, class, and variable prefixes used. Separate multiple prefixes with a comma. -->
 			<property name="prefixes" type="array" value="GAB"/>
 		</properties>
+		<exclude-pattern>/parts/</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.Security.NonceVerification">
+		<exclude-pattern>/parts/</exclude-pattern>
 	</rule>
 	<rule ref="WordPress.WP.I18n">
 		<properties>

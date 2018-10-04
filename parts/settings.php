@@ -1,4 +1,9 @@
 <?php
+/**
+ * Renders the settings template part.
+ *
+ * @package google-analytics-bridge
+ */
 
 use GAB\Admin;
 
@@ -47,9 +52,7 @@ use GAB\Admin;
 			?>
 				') ) { return false; }"
 			href="<?php echo esc_url( Admin::get_disconnect_callback_url() ); ?>">
-							<?php
-								esc_html_e( 'Disconnect Google Analytics', 'google-analytics-bridge' );
-								?>
+			<?php esc_html_e( 'Disconnect Google Analytics', 'google-analytics-bridge' ); ?>
 			</a>
 		<?php else : ?>
 		<a href="<?php echo esc_url( Admin::get_auth_callback_url() ); ?>"

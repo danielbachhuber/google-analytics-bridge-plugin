@@ -1,4 +1,9 @@
 <?php
+/**
+ * Base controller for the plugin.
+ *
+ * @package google-analytics-bridge
+ */
 
 namespace GAB;
 
@@ -115,12 +120,14 @@ class Base {
 
 		$response_body = wp_remote_retrieve_body( $response );
 		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			// translators: Displays the response body from Google.
 			return new \WP_Error( 'oauth-refresh', sprintf( esc_html__( 'Error fetching oauth2 token from Google: %s', 'google-analytics-bridge' ), wp_kses_post( '<pre>' . $response_body . '</pre>' ) ) );
 		}
 
 		$data = json_decode( $response_body );
 
 		if ( empty( $data->access_token ) ) {
+			// translators: Displays the response body from Google.
 			return new \WP_Error( 'oauth-refresh', sprintf( esc_html__( 'Error fetching oauth2 token from Google: %s', 'google-analytics-bridge' ), wp_kses_post( '<pre>' . $response_body . '</pre>' ) ) );
 		}
 

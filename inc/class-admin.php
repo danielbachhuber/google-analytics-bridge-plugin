@@ -1,9 +1,14 @@
 <?php
+/**
+ * Controller for admin interfaces.
+ *
+ * @package google-analytics-bridge
+ */
 
 namespace GAB;
 
 /**
- * Controller for admin interfaces
+ * Controller for admin interfaces.
  */
 class Admin extends Base {
 
@@ -49,8 +54,11 @@ class Admin extends Base {
 		add_options_page( esc_html__( 'Google Analytics Bridge', 'google-analytics-bridge' ), esc_html__( 'Google Analytics Bridge', 'google-analytics-bridge' ), self::$capability, self::$settings_page, array( __CLASS__, 'handle_settings_page' ) );
 	}
 
+	/**
+	 * Renders the settings page.
+	 */
 	public static function handle_settings_page() {
-		echo self::get_template_part( 'settings', array(), true );
+		self::get_template_part( 'settings', array(), true );
 	}
 
 	/**
@@ -66,7 +74,7 @@ class Admin extends Base {
 			return;
 		}
 
-		if ( empty( $_GET['code'] ) ) {
+		if ( empty( $_GET['code'] ) ) { // phpcs:ignore: WordPress.Security.NonceVerification.NoNonceVerification
 			wp_die( esc_html__( 'Invalid authorization code.', 'google-analytics-bridge' ) );
 		}
 
@@ -79,7 +87,7 @@ class Admin extends Base {
 			self::$google_token_url,
 			array(
 				'body' => array(
-					'code'          => sanitize_text_field( $_GET['code'] ),
+					'code'          => sanitize_text_field( $_GET['code'] ), // phpcs:ignore: WordPress.Security.NonceVerification.NoNonceVerification
 					'client_id'     => self::get_client_id(),
 					'client_secret' => self::get_client_secret(),
 					'redirect_uri'  => self::get_oauth_callback_redirect_uri(),
@@ -90,11 +98,13 @@ class Admin extends Base {
 
 		$response_body = wp_remote_retrieve_body( $response );
 		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			// translators: Displays response body from Google.
 			wp_die( sprintf( esc_html__( 'Error fetching oauth2 token from Google: %s', 'google-analytics-bridge' ), wp_kses_post( '<pre>' . $response_body . '</pre>' ) ) );
 		}
 
 		$data = json_decode( $response_body );
 		if ( empty( $data->access_token ) ) {
+			// translators: Displays response body from Google.
 			wp_die( sprintf( esc_html__( 'Error fetching oauth2 token from Google: %s', 'google-analytics-bridge' ), wp_kses_post( '<pre>' . $response_body . '</pre>' ) ) );
 		}
 
@@ -121,11 +131,11 @@ class Admin extends Base {
 	 * Handle a request to disconnect Google auth
 	 */
 	public function handle_google_disconnect_callback() {
-		if ( empty( $_GET['action'] ) || self::$disconnect_callback_option !== $_GET['action'] ) {
+		if ( empty( $_GET['action'] ) || self::$disconnect_callback_option !== $_GET['action'] ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 			return;
 		}
 
-		$nonce = sanitize_text_field( $_GET['nonce'] );
+		$nonce = sanitize_text_field( $_GET['nonce'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 		if ( ! current_user_can( self::$capability ) || ! wp_verify_nonce( $nonce, self::$disconnect_callback_option ) ) {
 			wp_die( esc_html__( "You shouldn't be doing this, sorry.", 'google-analytics-bridge' ) );
 		}

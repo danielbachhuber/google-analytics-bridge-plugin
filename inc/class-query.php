@@ -1,4 +1,9 @@
 <?php
+/**
+ * Query controller.
+ *
+ * @package google-analytics-bridge
+ */
 
 namespace GAB;
 
