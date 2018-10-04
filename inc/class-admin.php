@@ -50,7 +50,7 @@ class Admin extends Base {
 	}
 
 	public static function handle_settings_page() {
-		echo self::get_template_part( 'settings' );
+		echo self::get_template_part( 'settings', array(), true );
 	}
 
 	/**
@@ -174,25 +174,30 @@ class Admin extends Base {
 	/**
 	 * Get a rendered template part
 	 *
-	 * @param string $template
-	 * @param array $vars
-	 * @return string
+	 * @param string  $template Template part to render.
+	 * @param array   $vars     Any variables to pass through to the template.
+	 * @param boolean $render   Whether or not to render the template part.
+	 * @return string|null
 	 */
-	public static function get_template_part( $template, $vars = array() ) {
+	public static function get_template_part( $template, $vars = array(), $render = false ) {
 		$full_path = dirname( dirname( __FILE__ ) ) . '/parts/' . $template . '.php';
 
 		if ( ! file_exists( $full_path ) ) {
 			return '';
 		}
 
-		ob_start();
+		if ( ! $render ) {
+			ob_start();
+		}
 		// @codingStandardsIgnoreStart
 		if ( ! empty( $vars ) ) {
 			extract( $vars );
 		}
 		// @codingStandardsIgnoreEnd
 		include $full_path;
-		return ob_get_clean();
+		if ( ! $render ) {
+			return ob_get_clean();
+		}
 	}
 
 }
