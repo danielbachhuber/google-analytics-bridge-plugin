@@ -58,8 +58,12 @@ class Admin extends Base {
 	 */
 	public function handle_google_auth_callback() {
 
-		if ( empty( $_SERVER['REQUEST_URI'] )
-				|| false === stripos( $_SERVER['REQUEST_URI'], self::$connect_callback_uri ) ) {
+		if ( empty( $_SERVER['REQUEST_URI'] ) ) {
+			return;
+		}
+
+		$request_uri = sanitize_text_field( $_SERVER['REQUEST_URI'] );
+		if ( false === stripos( $request_uri, self::$connect_callback_uri ) ) {
 			return;
 		}
 
@@ -117,7 +121,8 @@ class Admin extends Base {
 			return;
 		}
 
-		if ( ! current_user_can( self::$capability ) || ! wp_verify_nonce( $_GET['nonce'], self::$disconnect_callback_option ) ) {
+		$nonce = sanitize_text_field( $_GET['nonce'] );
+		if ( ! current_user_can( self::$capability ) || ! wp_verify_nonce( $nonce, self::$disconnect_callback_option ) ) {
 			wp_die( esc_html__( "You shouldn't be doing this, sorry.", 'google-analytics-bridge' ) );
 		}
 
