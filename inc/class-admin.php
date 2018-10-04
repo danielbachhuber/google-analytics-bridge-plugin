@@ -57,7 +57,6 @@ class Admin extends Base {
 	 * Handle authentication callback from Google
 	 */
 	public function handle_google_auth_callback() {
-
 		if ( empty( $_SERVER['REQUEST_URI'] ) ) {
 			return;
 		}
@@ -76,15 +75,18 @@ class Admin extends Base {
 		}
 
 		// Fetch the actual token from the Google.
-		$response = wp_remote_post( self::$google_token_url, array(
-			'body' => array(
-				'code'             => sanitize_text_field( $_GET['code'] ),
-				'client_id'        => self::get_client_id(),
-				'client_secret'    => self::get_client_secret(),
-				'redirect_uri'     => self::get_oauth_callback_redirect_uri(),
-				'grant_type'       => 'authorization_code',
+		$response = wp_remote_post(
+			self::$google_token_url,
+			array(
+				'body' => array(
+					'code'          => sanitize_text_field( $_GET['code'] ),
+					'client_id'     => self::get_client_id(),
+					'client_secret' => self::get_client_secret(),
+					'redirect_uri'  => self::get_oauth_callback_redirect_uri(),
+					'grant_type'    => 'authorization_code',
+				),
 			)
-		) );
+		);
 
 		$response_body = wp_remote_retrieve_body( $response );
 		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
@@ -97,16 +99,19 @@ class Admin extends Base {
 		}
 
 		$refresh_token = ! empty( $data->refresh_token ) ? sanitize_text_field( $data->refresh_token ) : '';
-		update_option( self::$stored_credentials_option, array(
-			'access_token'        => sanitize_text_field( $data->access_token ),
-			'expire_time'         => time() + (int)$data->expires_in,
-			'refresh_token'       => $refresh_token,
-			'original_response'   => wp_remote_retrieve_body( $response ),
-			) );
-		$query_args = array(
-			'success'       => 'google-connect',
-			'page'          => self::$settings_page,
-			);
+		update_option(
+			self::$stored_credentials_option,
+			array(
+				'access_token'      => sanitize_text_field( $data->access_token ),
+				'expire_time'       => time() + (int) $data->expires_in,
+				'refresh_token'     => $refresh_token,
+				'original_response' => wp_remote_retrieve_body( $response ),
+			)
+		);
+		$query_args   = array(
+			'success' => 'google-connect',
+			'page'    => self::$settings_page,
+		);
 		$redirect_url = add_query_arg( $query_args, admin_url( 'admin.php' ) );
 		wp_safe_redirect( $redirect_url );
 		exit;
@@ -116,7 +121,6 @@ class Admin extends Base {
 	 * Handle a request to disconnect Google auth
 	 */
 	public function handle_google_disconnect_callback() {
-
 		if ( empty( $_GET['action'] ) || self::$disconnect_callback_option !== $_GET['action'] ) {
 			return;
 		}
@@ -127,10 +131,10 @@ class Admin extends Base {
 		}
 
 		update_option( self::$stored_credentials_option, '' );
-		$query_args = array(
-			'page'          => self::$settings_page,
-			'success'       => 'google-disconnect',
-			);
+		$query_args   = array(
+			'page'    => self::$settings_page,
+			'success' => 'google-disconnect',
+		);
 		$redirect_url = add_query_arg( $query_args, admin_url( 'admin.php' ) );
 		wp_safe_redirect( $redirect_url );
 		exit;
@@ -140,14 +144,13 @@ class Admin extends Base {
 	 * Build the auth URL to link to, which begins the auth process.
 	 */
 	public static function get_auth_callback_url() {
-
 		$query_args = array(
-			'client_id'        => self::get_client_id(),
-			'redirect_uri'     => self::get_oauth_callback_redirect_uri(),
-			'response_type'    => 'code',
-			'access_type'      => 'offline',
-			'approval_prompt'  => 'force',
-			'scope'            => rawurlencode( self::$google_scope_requested ),
+			'client_id'       => self::get_client_id(),
+			'redirect_uri'    => self::get_oauth_callback_redirect_uri(),
+			'response_type'   => 'code',
+			'access_type'     => 'offline',
+			'approval_prompt' => 'force',
+			'scope'           => rawurlencode( self::$google_scope_requested ),
 		);
 		return add_query_arg( $query_args, self::$google_auth_url );
 	}
@@ -161,7 +164,6 @@ class Admin extends Base {
 	 * the domain of your dev site. Note: it also works to just let Google
 	 * redirect to 'localhost', then changing the domain in your address bar and
 	 * passing the request on yourself.
-	 *
 	 */
 	protected function get_oauth_callback_redirect_uri() {
 		$redirect_uri = home_url( self::$connect_callback_uri );
