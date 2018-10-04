@@ -108,8 +108,9 @@ class Query extends Base {
 				'Content-Type'            => 'application/json; charset=UTF-8',
 			),
 			'body'    => wp_json_encode( $request_body ),
-			// GA API can be slow.
-			'timeout' => 30,
+			// GA API can be slow. Allow longer timeouts when priming cache on cron.
+			// @codingStandardsIgnore
+			'timeout' => defined( 'DOING_CRON' ) && DOING_CRON ? 30 : 3,
 		);
 		$response = wp_remote_post( 'https://analyticsreporting.googleapis.com/v4/reports:batchGet', $request );
 		if ( is_wp_error( $response ) ) {
