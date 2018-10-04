@@ -24,7 +24,7 @@ class Admin extends Base {
 	 *
 	 * @var string
 	 */
-	protected static $connect_callback_uri = 'oauth2callback/google';
+	protected static $connect_callback_uri = 'oauth2callback/gab';
 
 	/**
 	 * URL used for the initial authorization request.
