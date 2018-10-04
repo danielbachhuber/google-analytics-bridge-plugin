@@ -142,7 +142,7 @@ class Admin extends Base {
 			'response_type'    => 'code',
 			'access_type'      => 'offline',
 			'approval_prompt'  => 'force',
-			'scope'            => urlencode( self::$google_scope_requested ),
+			'scope'            => rawurlencode( self::$google_scope_requested ),
 		);
 		return add_query_arg( $query_args, self::$google_auth_url );
 	}
