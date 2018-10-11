@@ -27,6 +27,13 @@ class Admin extends Base {
 	protected static $connect_callback_uri = 'oauth2callback/gab';
 
 	/**
+	 * Identifier used for disconnecting the Google connection.
+	 *
+	 * @var string
+	 */
+	protected static $disconnect_callback_option = 'gab-disconnect-google';
+
+	/**
 	 * URL used for the initial authorization request.
 	 *
 	 * @var string
@@ -163,6 +170,20 @@ class Admin extends Base {
 			'scope'           => rawurlencode( self::$google_scope_requested ),
 		);
 		return add_query_arg( $query_args, self::$google_auth_url );
+	}
+
+	/**
+	 * Build the disconnect URL to link to, which begins the de-auth process.
+	 *
+	 * @return string
+	 */
+	public static function get_disconnect_callback_url() {
+		$query_args = array(
+			'action' => self::$disconnect_callback_option,
+			'nonce'  => wp_create_nonce( self::$disconnect_callback_option ),
+		);
+
+		return add_query_arg( $query_args, admin_url( 'index.php' ) );
 	}
 
 	/**
