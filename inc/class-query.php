@@ -91,6 +91,40 @@ class Query extends Base {
 	}
 
 	/**
+	 * Makes a request to the Google Analytics v3 API.
+	 *
+	 * @param array $request_args Arguments in the API request.
+	 * @return array|WP_Error
+	 */
+	public static function get_google_analytics_realtime_data( $request_args ) {
+		if ( empty( $request_args ) ) {
+			return new WP_Error( 'gab_missing_request_args', __( '$request_args is missing any entries.', 'google-analytics-bridge' ) );
+		}
+		$request_args['ids'] = self::get_profile_id();
+
+		$auth_details = self::get_current_google_token();
+		if ( empty( $auth_details ) ) {
+			return array();
+		}
+		$request_url = add_query_arg( $request_args, 'https://www.googleapis.com/analytics/v3/data/realtime' );
+		$response    = wp_remote_get(
+			$request_url,
+			array(
+				'timeout' => 3,
+				'headers' => array(
+					'Authorization' => 'Bearer ' . $auth_details['access_token'],
+					'Content-Type'  => 'application/json; charset=UTF-8',
+				),
+			)
+		);
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+		$result = json_decode( wp_remote_retrieve_body( $response ), true );
+		return $result;
+	}
+
+	/**
 	 * Makes a request to the Google Analytics v4 API.
 	 *
 	 * @param array $request_body Body of the request to be sent.
