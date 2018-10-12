@@ -206,7 +206,7 @@ class Admin extends Base {
 			$redirect_uri = str_replace( $host, 'localhost', $redirect_uri );
 		}
 
-		return $redirect_uri;
+		return apply_filters( 'gab_redirect_uri', $redirect_uri );
 	}
 
 	/**
