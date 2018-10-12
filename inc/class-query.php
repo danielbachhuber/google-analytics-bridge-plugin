@@ -161,5 +161,45 @@ class Query extends Base {
 		return $result;
 	}
 
+	/**
+	 * Makes a cached remote request with a failback mechanism.
+	 *
+	 * @param callback $callback        Remote request function to call.
+	 * @param mixed    $callback_args   Arguments to pass to the callback.
+	 * @param integer  $cache_expiry    Cache expiry time in minutes.
+	 * @param integer  $failback_expiry Failback expiry time in minutes.
+	 * @return mixed
+	 */
+	protected static function make_remote_request_with_cache_and_failback( $callback, $callback_args, $cache_expiry = 15, $failback_expiry = 60 ) {
+		$primary_cache_key  = 'bgra_cached_request_' . md5( serialize( $callback_args ) );
+		$failback_cache_key = $primary_cache_key . '_failback';
+		$cache_value        = wp_cache_get( $primary_cache_key );
+		// If the primary cache doesn't exist, then $cache_value===false.
+		// However, if the most recent API request failed, then $cache_value===''.
+		// IF the most recent API request failed, then the cache will expire much sooner.
+		if ( false !== $cache_value ) {
+			if ( '' !== $cache_value ) {
+				return $cache_value;
+			}
+			return wp_cache_get( $failback_cache_key );
+		}
+
+		$response_body = $callback( $callback_args );
+		if ( ! is_wp_error( $response_body ) ) {
+			$cache_expiry  = $cache_expiry * MINUTE_IN_SECONDS;
+			wp_cache_set( $failback_cache_key, $response_body, '', $failback_expiry * HOUR_IN_SECONDS );
+		} else {
+			// Empty response body will cause failback value to be used.
+			$response_body = '';
+			$cache_expiry  = 3 * MINUTE_IN_SECONDS;
+		}
+		wp_cache_set( $primary_cache_key, $response_body, '', $cache_expiry );
+		// Use the failback value if the response was errored.
+		if ( '' === $response_body ) {
+			$response_body = wp_cache_get( $failback_cache_key );
+		}
+		return $response_body;
+	}
+
 
 }
