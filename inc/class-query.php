@@ -185,7 +185,7 @@ class Query extends Base {
 		}
 
 		$response_body = $callback( $callback_args );
-		if ( ! is_wp_error( $response_body ) ) {
+		if ( ! is_wp_error( $response_body ) && ! empty( $response_body ) ) {
 			$cache_expiry = $cache_expiry * MINUTE_IN_SECONDS;
 			wp_cache_set( $failback_cache_key, $response_body, '', $failback_expiry * HOUR_IN_SECONDS );
 		} else {
