@@ -171,7 +171,7 @@ class Query extends Base {
 	 * @return mixed
 	 */
 	protected static function make_remote_request_with_cache_and_failback( $callback, $callback_args, $cache_expiry = 15, $failback_expiry = 60 ) {
-		$primary_cache_key  = 'bgra_cached_request_' . md5( json_encode( $callback_args ) );
+		$primary_cache_key  = 'bgra_cached_request_' . md5( wp_json_encode( $callback_args ) );
 		$failback_cache_key = $primary_cache_key . '_failback';
 		$cache_value        = wp_cache_get( $primary_cache_key );
 		// If the primary cache doesn't exist, then $cache_value===false.
