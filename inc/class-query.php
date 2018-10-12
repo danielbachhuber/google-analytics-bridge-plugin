@@ -171,7 +171,7 @@ class Query extends Base {
 	 * @return mixed
 	 */
 	protected static function make_remote_request_with_cache_and_failback( $callback, $callback_args, $cache_expiry = 15, $failback_expiry = 60 ) {
-		$primary_cache_key  = 'bgra_cached_request_' . md5( serialize( $callback_args ) );
+		$primary_cache_key  = 'bgra_cached_request_' . md5( json_encode( $callback_args ) );
 		$failback_cache_key = $primary_cache_key . '_failback';
 		$cache_value        = wp_cache_get( $primary_cache_key );
 		// If the primary cache doesn't exist, then $cache_value===false.
@@ -186,7 +186,7 @@ class Query extends Base {
 
 		$response_body = $callback( $callback_args );
 		if ( ! is_wp_error( $response_body ) ) {
-			$cache_expiry  = $cache_expiry * MINUTE_IN_SECONDS;
+			$cache_expiry = $cache_expiry * MINUTE_IN_SECONDS;
 			wp_cache_set( $failback_cache_key, $response_body, '', $failback_expiry * HOUR_IN_SECONDS );
 		} else {
 			// Empty response body will cause failback value to be used.
