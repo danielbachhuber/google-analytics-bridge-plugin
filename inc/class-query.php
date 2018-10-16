@@ -168,20 +168,23 @@ class Query extends Base {
 	 * @param mixed    $callback_args   Arguments to pass to the callback.
 	 * @param integer  $cache_expiry    Cache expiry time in minutes.
 	 * @param integer  $failback_expiry Failback expiry time in minutes.
+	 * @param boolean  $prime           Bypass the existing cache value to prime the cache.
 	 * @return mixed
 	 */
-	protected static function make_remote_request_with_cache_and_failback( $callback, $callback_args, $cache_expiry = 15, $failback_expiry = 60 ) {
+	protected static function make_remote_request_with_cache_and_failback( $callback, $callback_args, $cache_expiry = 15, $failback_expiry = 60, $prime = false ) {
 		$primary_cache_key  = 'bgra_cached_request_' . md5( wp_json_encode( $callback_args ) );
 		$failback_cache_key = $primary_cache_key . '_failback';
 		$cache_value        = wp_cache_get( $primary_cache_key );
-		// If the primary cache doesn't exist, then $cache_value===false.
-		// However, if the most recent API request failed, then $cache_value===''.
-		// IF the most recent API request failed, then the cache will expire much sooner.
-		if ( false !== $cache_value ) {
-			if ( '' !== $cache_value ) {
-				return $cache_value;
+		if ( false === $prime ) {
+			// If the primary cache doesn't exist, then $cache_value===false.
+			// However, if the most recent API request failed, then $cache_value===''.
+			// IF the most recent API request failed, then the cache will expire much sooner.
+			if ( false !== $cache_value ) {
+				if ( '' !== $cache_value ) {
+					return $cache_value;
+				}
+				return wp_cache_get( $failback_cache_key );
 			}
-			return wp_cache_get( $failback_cache_key );
 		}
 
 		$response_body = $callback( $callback_args );
