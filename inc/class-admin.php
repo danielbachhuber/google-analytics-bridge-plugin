@@ -58,6 +58,9 @@ class Admin extends Base {
 	 * Registers the admin link under the Options menu.
 	 */
 	public static function action_admin_menu() {
+		if ( 'user' !== self::get_authentication_mode() ) {
+			return;
+		}
 		add_options_page( esc_html__( 'Google Analytics Bridge', 'google-analytics-bridge' ), esc_html__( 'Google Analytics Bridge', 'google-analytics-bridge' ), self::$capability, self::$settings_page, array( __CLASS__, 'handle_settings_page' ) );
 	}
 
