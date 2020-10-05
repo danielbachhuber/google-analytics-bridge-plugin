@@ -1,0 +1,11 @@
+{
+    "name": "danielbachhuber/google-analytics-bridge-plugin",
+    "type": "wordpress-plugin",
+    "require": {},
+    "require-dev": {},
+    "scripts": {
+        "phpcs": "vendor/bin/phpcs",
+        "phpcbf": "vendor/bin/phpcbf",
+        "phpunit": "vendor/bin/phpunit"
+    }
+}
