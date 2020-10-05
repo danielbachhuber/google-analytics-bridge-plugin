@@ -74,7 +74,7 @@ class Admin extends Base {
 	/**
 	 * Handle authentication callback from Google
 	 */
-	public function handle_google_auth_callback() {
+	public static function handle_google_auth_callback() {
 		if ( empty( $_SERVER['REQUEST_URI'] ) ) {
 			return;
 		}
@@ -140,7 +140,7 @@ class Admin extends Base {
 	/**
 	 * Handle a request to disconnect Google auth
 	 */
-	public function handle_google_disconnect_callback() {
+	public static function handle_google_disconnect_callback() {
 		if ( empty( $_GET['action'] ) || self::$disconnect_callback_option !== $_GET['action'] ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 			return;
 		}
